@@ -163,10 +163,7 @@ EOF
     clang "${CLANG_FLAGS[@]}" \
             -fmodules \
             -c -o "$OUT/bar.o" \
-            -Xclang \
-            -fmodule-implementation-of \
-            -Xclang \
-            Lib \
+            -fmodule-name Lib \
             -isystem "$OUT/lib-headers-with-swift" \
             -ivfsoverlay "$OUT/clang-overlay.yaml" \
             "$SRCS/Lib/Bar.m"

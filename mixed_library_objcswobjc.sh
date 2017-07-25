@@ -126,10 +126,7 @@ EOF
     clang "${CLANG_FLAGS[@]}" \
         -fmodules \
         -c -o "$OUT/bar.o" \
-        -Xclang \
-        -fmodule-implementation-of \
-        -Xclang \
-        Module \
+        -fmodule-name Module \
         -isystem "$OUT" \
         -ivfsoverlay "$OUT/Module/clang.yaml" \
         "$SRCS/bar.m"
