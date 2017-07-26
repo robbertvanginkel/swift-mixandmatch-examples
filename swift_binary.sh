@@ -11,7 +11,7 @@ EOF
 function create_buckfiles() {
     touch "$SRCS/.buckconfig"
     cat > "$SRCS/BUCK" <<EOF
-swift_binary(
+apple_binary(
     name = 'foo',
     srcs = ['main.swift']
 )
@@ -27,16 +27,12 @@ function manual() {
     "$OUT/main" | grep "Hey"
 }
 
-function buck_static() {
+function buck_build() {
   cd "$SRCS"
-  buck build //:foo#static,macosx-x86_64
-}
-
-function buck_shared() {
-  cd "$SRCS"
-  buck build //:foo#shared,macosx-x86_64
+  buck build //:foo#macosx-x86_64
 }
 
 create_files
 create_buckfiles
-manual
+# manual
+$@

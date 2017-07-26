@@ -23,6 +23,21 @@ int main(int argc, char *argv[]) {
 EOF
 }
 
+function create_buckfiles() {
+    touch "$SRCS/.buckconfig"
+    cat > "$SRCS/BUCK" <<EOF
+apple_binary(
+    name = 'main',
+    srcs = ['main.m'],
+    deps = [':Foo']
+)
+apple_library(
+    name = 'Foo',
+    srcs = ['Foo.swift'],
+)
+EOF
+}
+
 function manual() {
   cat > "$OUT/swiftc-output.json" <<EOF
       {
@@ -61,5 +76,13 @@ EOF
     "$OUT/main" | grep "42"
 }
 
+function buck_build() {
+  cd "$SRCS"
+  buck build //:main#macosx-x86_64 --config cxx.cflags=-fmodules
+}
+
+
 create_files
-manual
+create_buckfiles
+# manual
+buck_build

@@ -48,6 +48,22 @@ print("\(Foo().bar())")
 EOF
 }
 
+function create_buckfiles() {
+    touch "$SRCS/.buckconfig"
+    cat > "$SRCS/BUCK" <<EOF
+apple_binary(
+    name = 'main',
+    srcs = ['main.swift'],
+    deps = [':Lib']
+)
+apple_library(
+    name = 'Lib',
+    srcs = ['Lib/Foo.swift', 'Lib/Bar.m'],
+    exported_headers = ['Lib/Lib.h', 'Lib/Bar.h'],
+)
+EOF
+}
+
 function manual() {
     PWD=$(pwd)
     mkdir -p "$OUT/lib-headers"
@@ -238,5 +254,11 @@ EOF
     "$OUT/main"
 }
 
+function buck_build() {
+  cd "$SRCS"
+  buck build //:main#macosx-x86_64
+}
+
 create_files
-manual
+create_buckfiles
+$@

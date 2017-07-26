@@ -4,4 +4,4 @@ Examples of how to compile swift and objective c together. Both in a single targ
 
 ## Usage 
 
-There are shellscipts per import/mix case that I identified. Running the shell scripts will write the required files to a `gen/` folder and afterwards execute the required commands to compile and test.
+There are shellscipts per import/mix case that I identified. Running the shell scripts will write the required files to a `gen/` folder. The first positional argument for the bash script is how it should attempt to compile, options are `manual`, `buck_static` or `buck_shared` for libraries, `buck_build` for binaries.

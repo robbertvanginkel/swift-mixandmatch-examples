@@ -41,4 +41,5 @@ function buck_shared() {
 
 create_files
 create_buckfiles
-manual
+# manual
+$@

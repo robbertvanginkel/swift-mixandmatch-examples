@@ -27,6 +27,22 @@ print(x.message)
 EOF
 }
 
+function create_buckfiles() {
+    touch "$SRCS/.buckconfig"
+    cat > "$SRCS/BUCK" <<EOF
+apple_binary(
+    name = 'main',
+    srcs = ['main.swift'],
+    deps = [':Bar']
+)
+apple_library(
+    name = 'Bar',
+    srcs = ['Bar.m'],
+    exported_headers = ['Bar.h'],
+)
+EOF
+}
+
 function manual() {
     cat > "$OUT/module.modulemap" <<EOF
 module Bar {
@@ -52,5 +68,12 @@ EOF
     "$OUT/main" | grep "Hello from ObjC"
 }
 
+function buck_build() {
+  cd "$SRCS"
+  buck build //:main#macosx-x86_64
+}
+
 create_files
-manual
+create_buckfiles
+# manual
+$@

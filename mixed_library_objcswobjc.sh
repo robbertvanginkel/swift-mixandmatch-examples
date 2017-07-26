@@ -31,13 +31,6 @@ EOF
     return 1;
 }
 @end
-
-int main(int argc, char *argv[]) {
-  @autoreleasepool {
-    printf("%s\n", [[[[Bar alloc] init] message] UTF8String]);
-  }
-  return 0;
-}
 EOF
     cat > "$SRCS/Foo.swift" <<EOF
 import Foundation
@@ -131,12 +124,15 @@ EOF
         -ivfsoverlay "$OUT/Module/clang.yaml" \
         "$SRCS/bar.m"
 
-    ld "${LD_SWIFTFLAGS[@]}" -o "$OUT/main" "$OUT/Foo.o" "$OUT/Bar.o"
+    libtool -static \
+        -o "$OUT/libModule.a" \
+        "$OUT/Foo.o" "$OUT/Bar.o"
 
     # validation
-    nm $OUT/Bar.o | grep " _main"
+    ! nm $OUT/Bar.o | grep " _main"
     ! nm $OUT/Foo.o | grep " _main"
-    "$OUT/main" | grep "2"
+    nm "$OUT/libModule.a" | grep "Bar.o"
+    nm "$OUT/libModule.a" | grep "Foo.o"
 }
 
 create_files
