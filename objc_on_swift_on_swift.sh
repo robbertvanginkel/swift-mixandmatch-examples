@@ -1,12 +1,20 @@
 source common.sh
 
 function create_files() {
-    set_up obcj_on_swift_module
+    set_up obcj_on_swift_on_swift
+
+cat > "$SRCS/Bar.swift" <<EOF
+import Foundation
+@objc open class Bar: NSObject {
+    public func box() -> Int { return 42; }
+}
+EOF
 
     cat > "$SRCS/Foo.swift" <<EOF
 import Foundation
-@objc public class Foo: NSObject {
-    public func bar() -> Int { return 42; }
+import Bar
+@objc public class Foo: Bar {
+    public func bar() -> Int { return super.box() + 1; }
 }
 EOF
 
@@ -34,6 +42,11 @@ apple_binary(
 swift_library(
     name = 'Foo',
     srcs = ['Foo.swift'],
+    deps = [':Bar']
+)
+swift_library(
+    name = 'Bar',
+    srcs = ['Bar.swift'],
 )
 EOF
 }

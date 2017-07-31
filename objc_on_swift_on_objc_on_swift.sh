@@ -1,22 +1,48 @@
 source common.sh
 
 function create_files() {
-    set_up obcj_on_swift_module
+    set_up obcj_on_objc_on_swift
 
-    cat > "$SRCS/Foo.swift" <<EOF
+cat > "$SRCS/Bar.swift" <<EOF
 import Foundation
-@objc public class Foo: NSObject {
-    public func bar() -> Int { return 42; }
+@objc open class Bar: NSObject {
+    public func box() -> Int { return 42; }
+}
+EOF
+
+
+    cat > "$SRCS/Foo.h" <<EOF
+@import Foundation;
+@import Bar;
+@interface Foo: NSObject
+- (Bar *)bar;
+@end
+EOF
+    cat > "$SRCS/Foo.m" <<EOF
+@import Foundation;
+#import "Foo.h"
+
+@implementation Foo
+- (Bar *)bar {
+  return [Bar new];
+}
+@end
+EOF
+
+    cat > "$SRCS/FooBar.swift" <<EOF
+import Foo
+@objc open class FooBar: Foo {
+    public func box() -> Int { return super.bar().box(); }
 }
 EOF
 
     cat >"$SRCS/main.m" <<EOF
 #import <Foundation/Foundation.h>
-@import Foo;
+@import FooBar;
 
 int main(int argc, char *argv[]) {
   @autoreleasepool {
-    printf("%s", [[NSString stringWithFormat:@"%ld", [[[Foo alloc] init] bar]] UTF8String]);
+    printf("%s", [[NSString stringWithFormat:@"%ld", [[FooBar new] box]] UTF8String]);
   }
   return 0;
 }
@@ -29,11 +55,23 @@ function create_buckfiles() {
 apple_binary(
     name = 'main',
     srcs = ['main.m'],
-    deps = [':Foo']
+    deps = [':FooBar']
 )
 swift_library(
+    name = 'FooBar',
+    srcs = ['FooBar.swift'],
+    deps = [':Foo']
+)
+apple_library(
     name = 'Foo',
-    srcs = ['Foo.swift'],
+    srcs = ['Foo.m'],
+    exported_headers = ['Foo.h'],
+    modular = True,
+    deps = [':Bar']
+)
+swift_library(
+    name = 'Bar',
+    srcs = ['Bar.swift'],
 )
 EOF
 }
@@ -85,4 +123,4 @@ function buck_build() {
 create_files
 create_buckfiles
 # manual
-buck_build
+$@
