@@ -1,7 +1,7 @@
 source common.sh
 
 function create_files() {
-    set_up obcj_on_objc_on_swift
+    set_up obcj_on_swift_on_objc_on_swift
 
 cat > "$SRCS/Bar.swift" <<EOF
 import Foundation
