@@ -67,6 +67,8 @@ apple_library(
     name = 'Lib',
     srcs = ['Lib/Foo.swift', 'Lib/Bar.m'],
     exported_headers = ['Lib/Lib.h', 'Lib/Bar.h'],
+    modular = True,
+    cflags  = ['-fmodule-name', 'Lib'],
 )
 EOF
 }

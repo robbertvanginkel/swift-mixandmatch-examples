@@ -40,6 +40,18 @@ import Foundation
 EOF
 }
 
+function create_buckfiles() {
+    touch "$SRCS/.buckconfig"
+    cat > "$SRCS/BUCK" <<EOF
+apple_library(
+    name = 'Module',
+    srcs = ['Foo.swift', 'Bar.m'],
+    exported_headers = ['Module.h', 'Bar.h'],
+    modular = True,
+)
+EOF
+}
+
 function manual() {
     mkdir -p "$OUT/Module"
     cat > "$OUT/swiftc-output.json" <<EOF
@@ -135,5 +147,11 @@ EOF
     nm "$OUT/libModule.a" | grep "Foo.o"
 }
 
+function buck_static() {
+  cd "$SRCS"
+  buck build //:Module#macosx-x86_64,static
+}
+
 create_files
-manual
+create_buckfiles
+$@
